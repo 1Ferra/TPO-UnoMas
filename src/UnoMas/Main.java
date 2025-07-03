@@ -60,9 +60,6 @@ public class Main {
             estrategiaInicial
         );
 
-        PartidoController partidoController = PartidoController.getInstancia();
-        partidoController.crearPartido(partido);
-
         // Agregar notificador por mail
         AdapterNotificacionEmail adapter = new AdapterJavaMail() {
             @Override
@@ -70,9 +67,13 @@ public class Main {
                 System.out.println("EMAIL enviado a " + notificacion.getUsuario().getEmail() + ": " + notificacion.getMensaje());
             }
         };
+        
         Notificador notificador = new Notificador(new Email(adapter));
         partido.agregar(notificador);
 
+        PartidoController partidoController = PartidoController.getInstancia();
+        partidoController.crearPartido(partido);
+        
         System.out.println("Partido creado en Caballito con 10 jugadores necesarios\n");
 
         // ================================

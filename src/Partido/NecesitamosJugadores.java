@@ -27,7 +27,12 @@ public class NecesitamosJugadores implements PartidoState {
 
     @Override
     public void agregarJugador(Partido partido, Usuario usuario) {
+        partido.getJugadores().add(usuario);
+        usuario.agregarAlHistorial(partido);
         System.out.println("Jugador agregado.");
+
+        partido.notificar();
+
         if (partido.getJugadores().size() >= partido.getJugadoresRequeridos()) {
             partido.cambiarEstado(new PartidoArmado());
         }

@@ -22,8 +22,7 @@ public class Partido extends Observado {
     private Nivel nivelMaximo;
     private List<Usuario> jugadores;
     private EmparejamientoStrategy estrategia;
-    private List<IObserver> observers;
-
+    
     public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora, Nivel nivelMinimo, Nivel nivelMaximo, EmparejamientoStrategy estrategia) {
     	super();
 		this.deporte = deporte;
@@ -36,12 +35,9 @@ public class Partido extends Observado {
 		this.nivelMaximo = nivelMaximo;
 		this.estrategia = estrategia;
         jugadores = new ArrayList<>();
-        observers = new ArrayList<>();
     }
     
-    public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora,
-			PartidoState estado, Nivel nivelMinimo, Nivel nivelMaximo, List<Usuario> jugadores,
-			EmparejamientoStrategy estrategia, List<IObserver> observers) {
+    public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora, PartidoState estado, Nivel nivelMinimo, Nivel nivelMaximo, List<Usuario> jugadores, EmparejamientoStrategy estrategia) {
 		super();
 		this.deporte = deporte;
 		this.jugadoresRequeridos = jugadoresRequeridos;
@@ -53,32 +49,29 @@ public class Partido extends Observado {
 		this.nivelMaximo = nivelMaximo;
 		this.jugadores = jugadores;
 		this.estrategia = estrategia;
-		this.observers = observers;
 	}
 
 	// Observer pattern
     public void agregar(IObserver observer) {
-        observers.add(observer);
+        observadores.add(observer);
     }
 
     public void eliminar(IObserver observer) {
-        observers.remove(observer);
+    	observadores.remove(observer);
     }
 
     @Override
     public void notificar() {
-        for (IObserver obs : observers) {
+        for (IObserver obs : observadores) {
             obs.serNotificadoPor(this);
         }
     }
 
     public void agregarJugador(Usuario jugador) {
-        jugadores.add(jugador);
-        jugador.agregarAlHistorial(this);
         estado.agregarJugador(this, jugador);
         notificar();
     }
-
+    
     public void cambiarEstado(PartidoState estado) {
         this.estado = estado;
         notificar();
@@ -168,11 +161,11 @@ public class Partido extends Observado {
 	}
 
 	public List<IObserver> getObservers() {
-		return observers;
+		return observadores;
 	}
 
 	public void setObservers(List<IObserver> observers) {
-		this.observers = observers;
+		this.observadores = observers;
 	}
 
 	public EmparejamientoStrategy getEstrategia() {
