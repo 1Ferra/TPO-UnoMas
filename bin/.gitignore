@@ -1,11 +1,9 @@
 /.idea/
 /Controlador/
-/Modelo/
-/TPO_UnoMas.iml
-/Vista/
-/module-info.class
-/out/
 /Emparejamiento/
-/Partido/
+/Modelo/
 /Notificador/
+/Partido/
+/TPO_UnoMas.iml
 /UnoMas/
+/module-info.class

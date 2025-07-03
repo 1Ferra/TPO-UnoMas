@@ -21,7 +21,7 @@ public abstract class Observado {
 
     public void notificar() {
         for (IObserver o : observadores) {
-            // Notificar
+            o.serNotificadoPor(this);
         }
     }
 }

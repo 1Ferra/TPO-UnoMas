@@ -75,6 +75,7 @@ public class Partido extends Observado {
     public void agregarJugador(Usuario jugador) {
         jugadores.add(jugador);
         jugador.agregarAlHistorial(this);
+        estado.agregarJugador(this, jugador);
         notificar();
     }
 
