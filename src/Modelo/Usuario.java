@@ -1,5 +1,10 @@
 package Modelo;
 
+import java.util.Date;
+
+import Controlador.PartidoController;
+import Emparejamiento.EmparejamientoStrategy;
+
 public class Usuario {
 
     private String nombre;
@@ -15,6 +20,34 @@ public class Usuario {
         this.deporteFavorito = deporteFavorito;
         this.nivel = nivel;
     }
+    
+    public Partido crearPartido(Deporte deporte,
+            int jugadoresRequeridos,
+            int duracion,
+            String ubicacion,
+            Date fechaHora,
+            Nivel nivelMinimo,
+            Nivel nivelMaximo,
+            EmparejamientoStrategy estrategia) {
+    	
+		Partido partido = new Partido(
+			deporte,
+			jugadoresRequeridos,
+			duracion,
+			ubicacion,
+			fechaHora,
+			nivelMinimo,
+			nivelMaximo,
+			estrategia
+		);
+		
+		
+		
+		partido.agregarJugador(this);
+		PartidoController.getInstancia().crearPartido(partido);
+		return partido;
+	}
+
 
     public String getNombre() {
         return nombre;

@@ -7,6 +7,7 @@ import java.util.List;
 import Emparejamiento.EmparejamientoStrategy;
 import Notificador.IObserver;
 import Notificador.Observado;
+import Partido.NecesitamosJugadores;
 import Partido.PartidoState;
 
 public class Partido extends Observado {
@@ -23,23 +24,21 @@ public class Partido extends Observado {
     private EmparejamientoStrategy estrategia;
     private List<IObserver> observers;
 
-    public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora,
-			PartidoState estado, Nivel nivelMinimo, Nivel nivelMaximo,
-			EmparejamientoStrategy estrategia) {
+    public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora, Nivel nivelMinimo, Nivel nivelMaximo, EmparejamientoStrategy estrategia) {
     	super();
 		this.deporte = deporte;
 		this.jugadoresRequeridos = jugadoresRequeridos;
 		this.duracion = duracion;
 		this.ubicacion = ubicacion;
 		this.fechaHora = fechaHora;
-		this.estado = estado;
+		this.estado = new NecesitamosJugadores();
 		this.nivelMinimo = nivelMinimo;
 		this.nivelMaximo = nivelMaximo;
 		this.estrategia = estrategia;
         jugadores = new ArrayList<>();
         observers = new ArrayList<>();
     }
-
+    
     public Partido(Deporte deporte, int jugadoresRequeridos, int duracion, String ubicacion, Date fechaHora,
 			PartidoState estado, Nivel nivelMinimo, Nivel nivelMaximo, List<Usuario> jugadores,
 			EmparejamientoStrategy estrategia, List<IObserver> observers) {

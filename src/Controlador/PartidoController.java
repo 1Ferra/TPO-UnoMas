@@ -9,8 +9,6 @@ import Modelo.Deporte;
 import Modelo.Nivel;
 import Modelo.Partido;
 import Modelo.Usuario;
-import Notificador.Observado;
-import Partido.PartidoState;
 
 public class PartidoController {
 
@@ -22,15 +20,18 @@ public class PartidoController {
                              int duracion,
                              String ubicacion,
                              Date fechaHora,
-                             PartidoState estado,
                              Nivel nivelMinimo,
                              Nivel nivelMaximo,
                              EmparejamientoStrategy estrategia) {
-    	Partido nuevoPartido = new Partido(deporte, jugadoresRequeridos, duracion, ubicacion, fechaHora, estado, nivelMinimo, nivelMaximo, estrategia);
+    	Partido nuevoPartido = new Partido(deporte, jugadoresRequeridos, duracion, ubicacion, fechaHora, nivelMinimo, nivelMaximo, estrategia);
 
 		partidos.add(nuevoPartido);
     }
-
+    
+    public void crearPartido(Partido partido) {
+    	partidos.add(partido);
+    }
+    
     public void eliminarPartido(Partido partido) {
         partidos.remove(partido);
     }
