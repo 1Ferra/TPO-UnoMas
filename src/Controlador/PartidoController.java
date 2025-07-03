@@ -51,6 +51,26 @@ public class PartidoController {
     public void agregarJugador(Partido partido, Usuario usuario) {
         partido.agregarJugador(usuario);
     }
+    
+    public List<Partido> buscarPartidosDisponibles(Deporte deporte, String ubicacion) {
+        List<Partido> disponibles = new ArrayList<>();
+        
+        for (Partido p : partidos) {
+            boolean coincideDeporte = p.getDeporte().equals(deporte);
+            boolean coincideUbicacion = p.getUbicacion().equalsIgnoreCase(ubicacion);
+            boolean necesitaJugadores = p.getJugadores().size() < p.getJugadoresRequeridos();
+
+            if (coincideDeporte && coincideUbicacion && necesitaJugadores) {
+                disponibles.add(p);
+            }
+        }
+
+        return disponibles;
+    }
+    
+    public List<Partido> getPartidos() {
+        return partidos;
+    }
 
     public static PartidoController getInstancia() {
         if (instancia == null) {

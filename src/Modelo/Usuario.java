@@ -1,6 +1,8 @@
 package Modelo;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import Controlador.PartidoController;
 import Emparejamiento.EmparejamientoStrategy;
@@ -12,6 +14,7 @@ public class Usuario {
     private String contraseña;
     private Deporte deporteFavorito;
     private Nivel nivel;
+    private List<Partido> historial;
 
     public Usuario(String nombre, String email, String contraseña, Deporte deporteFavorito, Nivel nivel) {
         this.nombre = nombre;
@@ -19,6 +22,7 @@ public class Usuario {
         this.contraseña = contraseña;
         this.deporteFavorito = deporteFavorito;
         this.nivel = nivel;
+        this.historial = new ArrayList<>();
     }
     
     public Partido crearPartido(Deporte deporte,
@@ -41,13 +45,30 @@ public class Usuario {
 			estrategia
 		);
 		
-		
-		
 		partido.agregarJugador(this);
+		this.agregarAlHistorial(partido);
 		PartidoController.getInstancia().crearPartido(partido);
 		return partido;
 	}
+    
+    public void agregarAlHistorial(Partido partido) {
+        historial.add(partido);
+    }
 
+    public int contarPartidosPorDeporte(Deporte deporte) {
+        int count = 0;
+        for (Partido p : historial) {
+            if (p.getDeporte().equals(deporte)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public List<Partido> buscarPartidosDisponibles(Deporte deporte, String ubicacion) {
+        PartidoController controller = PartidoController.getInstancia();
+        return controller.buscarPartidosDisponibles(deporte, ubicacion);
+    }
 
     public String getNombre() {
         return nombre;
@@ -88,7 +109,11 @@ public class Usuario {
     public void setNivel(Nivel nivel) {
         this.nivel = nivel;
     }
-
+    
+    public List<Partido> getHistorial() {
+    	return historial;
+    }
+    
     @Override
     public String toString() {
         return "Usuario{" +

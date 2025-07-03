@@ -45,7 +45,6 @@ public class Main {
             60,
             "Plaza central",
             new Date(System.currentTimeMillis() + 3600000), // en 1 hora
-            new NecesitamosJugadores(),
             Nivel.INTERMEDIO,
             Nivel.AVANZADO,
             estrategiaNivel
