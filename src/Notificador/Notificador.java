@@ -29,10 +29,10 @@ public class Notificador implements IObserver {
     public void serNotificadoPor(Observado observable) {
         if (observable instanceof Partido) {
             this.partido = (Partido) observable;
-            
+
             String estadoActual = partido.getEstado().getClass().getSimpleName();
             String mensaje = "El partido cambió de estado a: " + estadoActual;
-            
+
             for (Usuario u : partido.getJugadores()) {
                 Notificacion n = new Notificacion(mensaje, u);
                 notificar(n);
