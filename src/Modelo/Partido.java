@@ -65,9 +65,10 @@ public class Partido extends Observado {
         observers.remove(observer);
     }
 
+    @Override
     public void notificar() {
         for (IObserver obs : observers) {
-           //  Notificar
+            obs.serNotificadoPor(this);
         }
     }
 
