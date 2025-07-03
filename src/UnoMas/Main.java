@@ -61,12 +61,7 @@ public class Main {
         );
 
         // Agregar notificador por mail
-        AdapterNotificacionEmail adapter = new AdapterJavaMail() {
-            @Override
-            public void notificarJavaMail(Notificacion notificacion) {
-                System.out.println("EMAIL enviado a " + notificacion.getUsuario().getEmail() + ": " + notificacion.getMensaje());
-            }
-        };
+        AdapterNotificacionEmail adapter = new AdapterJavaMail();
         
         Notificador notificador = new Notificador(new Email(adapter));
         partido.agregar(notificador);
