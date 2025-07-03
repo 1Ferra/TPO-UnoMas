@@ -8,77 +8,112 @@ import Modelo.*;
 import Notificador.*;
 import Partido.*;
 
+import java.util.*;
+
 public class Main {
     public static void main(String[] args) {
 
-        // ----------- CREACIÓN DE DEPORTES -----------
+        System.out.println("=== CREACIÓN DE DEPORTES ===");
         Deporte futbol = new Deporte("Fútbol");
-        Deporte voley = new Deporte("Vóley");
+        Deporte padel = new Deporte("Pádel");
+        Deporte handball = new Deporte("Handball");
 
         DeporteController deporteController = DeporteController.getInstancia();
         deporteController.registrarDeporte(futbol.getNombre());
-        deporteController.registrarDeporte(voley.getNombre());
+        deporteController.registrarDeporte(padel.getNombre());
+        deporteController.registrarDeporte(handball.getNombre());
         deporteController.mostrarDeportes();
 
-        // ----------- CREACIÓN DE USUARIOS -----------
-        Usuario juan = new Usuario("Juan", "juan@mail.com", "1234", futbol, Nivel.INTERMEDIO);
-        Usuario ana = new Usuario("Ana", "ana@mail.com", "abcd", futbol, Nivel.AVANZADO);
-        Usuario pedro = new Usuario("Pedro", "pedro@mail.com", "pass", futbol, Nivel.PRINCIPIANTE);
-        Usuario laura = new Usuario("Laura", "laura@mail.com", "clave", futbol, Nivel.INTERMEDIO);
-
+        System.out.println("\n=== CREACIÓN DE USUARIOS ===");
         UsuarioController usuarioController = UsuarioController.getInstancia();
-        usuarioController.registrarUsuario(juan.getNombre(), juan.getEmail(), juan.getContraseña(), juan.getDeporteFavorito(), juan.getNivel());
-        usuarioController.registrarUsuario(ana.getNombre(), ana.getEmail(), ana.getContraseña(), ana.getDeporteFavorito(), ana.getNivel());
-        usuarioController.registrarUsuario(pedro.getNombre(), pedro.getEmail(), pedro.getContraseña(), pedro.getDeporteFavorito(), pedro.getNivel());
-        usuarioController.registrarUsuario(laura.getNombre(), laura.getEmail(), laura.getContraseña(), laura.getDeporteFavorito(), laura.getNivel());
+
+        Nivel[] niveles = Nivel.values();
+        String[] nombres = {"Juan", "Ana", "Pedro", "Laura", "Diego", "Sofia", "Tomas", "Camila", "Luis", "Flor"};
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for (int i = 0; i < nombres.length; i++) {
+            Usuario u = new Usuario(
+                nombres[i],
+                nombres[i].toLowerCase() + "@mail.com",
+                "1234",
+                futbol,
+                niveles[i % niveles.length]
+            );
+            usuarioController.registrarUsuario(u.getNombre(), u.getEmail(), u.getContraseña(), u.getDeporteFavorito(), u.getNivel());
+            usuarios.add(u);
+        }
+
         usuarioController.mostrarUsuarios();
 
-        // ----------- CREACIÓN DE ESTRATEGIA DE EMPAREJAMIENTO -----------
-        EmparejamientoStrategy estrategiaNivel = new EmparejarPorNivel(); // lógica simple implementada abajo
+        System.out.println("\n=== CREACIÓN DE PARTIDO ===");
+        Date mañana = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
 
-        // ----------- CREACIÓN DE PARTIDO -----------
-        PartidoController partidoController = PartidoController.getInstancia();
-
-        Partido partido = new Partido(
+        EmparejamientoStrategy estrategiaInicial = new EmparejarPorNivel();
+        Partido partido = usuarios.get(0).crearPartido(
             futbol,
-            3, // jugadores requeridos
-            60,
-            "Plaza central",
-            new Date(System.currentTimeMillis() + 3600000), // en 1 hora
-            Nivel.INTERMEDIO,
+            10,
+            90,
+            "Caballito",
+            mañana,
+            Nivel.PRINCIPIANTE,
             Nivel.AVANZADO,
-            estrategiaNivel
+            estrategiaInicial
         );
 
-        // ----------- OBSERVER: NOTIFICADOR CON ESTRATEGIA EMAIL -----------
-        AdapterNotificacionEmail adaptador = new AdapterJavaMail() {
+        PartidoController partidoController = PartidoController.getInstancia();
+        partidoController.crearPartido(partido);
+
+        // Agregar notificador por mail
+        AdapterNotificacionEmail adapter = new AdapterJavaMail() {
             @Override
             public void notificarJavaMail(Notificacion notificacion) {
                 System.out.println("EMAIL enviado a " + notificacion.getUsuario().getEmail() + ": " + notificacion.getMensaje());
             }
         };
-        EstrategiaNotificacion estrategiaEmail = new Email(adaptador);
-        Notificador notificador = new Notificador(estrategiaEmail);
-
+        Notificador notificador = new Notificador(new Email(adapter));
         partido.agregar(notificador);
 
-        // ----------- AGREGO JUGADORES Y SE CAMBIA DE ESTADO AUTOMÁTICAMENTE -----------
-        partido.getEstado().agregarJugador(partido, juan);
-        partido.getEstado().agregarJugador(partido, laura);
-        partido.getEstado().agregarJugador(partido, ana); // esto debería activar transición a PartidoArmado y notificar
+        System.out.println("Partido creado en Caballito con 10 jugadores necesarios\n");
 
-        // ----------- CONFIRMAR EL PARTIDO -----------
+        // ================================
+        // Emparejar por nivel
+        // ================================
+        System.out.println("=== EMPAREJAMIENTO POR NIVEL ===");
+
+        List<Usuario> disponibles = new ArrayList<>(usuarios);
+        disponibles.remove(0); // el creador ya fue agregado
+
+        List<Usuario> primeraMitad = disponibles.subList(0, 4); // 4 usuarios
+
+        partido.emparejar(primeraMitad, partido);
+
+        System.out.println("Jugadores actuales: " + partido.getJugadores().size());
+
+        // ================================
+        // Emparejar por ubicacion
+        // ================================
+        System.out.println("\n=== CAMBIO DE ESTRATEGIA A CERCANÍA ===");
+        partido.setEstrategia(new EmparejarPorCercania());
+
+        List<Usuario> segundaMitad = disponibles.subList(4, disponibles.size()); // 5 usuarios restantes
+        partido.emparejar(segundaMitad, partido);
+
+        System.out.println("Jugadores actuales: " + partido.getJugadores().size());
+
+        // ================================
+        // Confirmar y cambiar estados
+        // ================================
+        System.out.println("\n=== TRANSICIÓN DE ESTADOS ===");
+
+        System.out.println("Estado actual: " + partido.getEstado().getClass().getSimpleName());
+
         partido.getEstado().confirmar(partido);
+        System.out.println("Estado actual: " + partido.getEstado().getClass().getSimpleName());
 
-        // ----------- INICIAR Y FINALIZAR EL PARTIDO -----------
         partido.getEstado().iniciar(partido);
+        System.out.println("Estado actual: " + partido.getEstado().getClass().getSimpleName());
+
         partido.getEstado().finalizar(partido);
-
-        // ----------- CAMBIO DE ESTRATEGIA -----------
-        partidoController.cambiarEstrategia(new EmparejarPorHistorial(), partido);
-        System.out.println("Se cambió la estrategia de emparejamiento a: EmparejarPorHistorial");
-
-        // ----------- APLICACIÓN DE ESTRATEGIA ACTUAL -----------
-        partido.emparejar(Arrays.asList(pedro, juan, laura, ana), partido);
+        System.out.println("Estado actual: " + partido.getEstado().getClass().getSimpleName());
     }
 }
