@@ -9,8 +9,6 @@ import Modelo.Deporte;
 import Modelo.Nivel;
 import Modelo.Partido;
 import Modelo.Usuario;
-import Notificador.Observado;
-import Partido.PartidoState;
 
 public class PartidoController {
 
@@ -22,15 +20,18 @@ public class PartidoController {
                              int duracion,
                              String ubicacion,
                              Date fechaHora,
-                             PartidoState estado,
                              Nivel nivelMinimo,
                              Nivel nivelMaximo,
                              EmparejamientoStrategy estrategia) {
-    	Partido nuevoPartido = new Partido(deporte, jugadoresRequeridos, duracion, ubicacion, fechaHora, estado, nivelMinimo, nivelMaximo, estrategia);
+    	Partido nuevoPartido = new Partido(deporte, jugadoresRequeridos, duracion, ubicacion, fechaHora, nivelMinimo, nivelMaximo, estrategia);
 
 		partidos.add(nuevoPartido);
     }
-
+    
+    public void crearPartido(Partido partido) {
+    	partidos.add(partido);
+    }
+    
     public void eliminarPartido(Partido partido) {
         partidos.remove(partido);
     }
@@ -49,6 +50,26 @@ public class PartidoController {
 
     public void agregarJugador(Partido partido, Usuario usuario) {
         partido.agregarJugador(usuario);
+    }
+    
+    public List<Partido> buscarPartidosDisponibles(Deporte deporte, String ubicacion) {
+        List<Partido> disponibles = new ArrayList<>();
+        
+        for (Partido p : partidos) {
+            boolean coincideDeporte = p.getDeporte().equals(deporte);
+            boolean coincideUbicacion = p.getUbicacion().equalsIgnoreCase(ubicacion);
+            boolean necesitaJugadores = p.getJugadores().size() < p.getJugadoresRequeridos();
+
+            if (coincideDeporte && coincideUbicacion && necesitaJugadores) {
+                disponibles.add(p);
+            }
+        }
+
+        return disponibles;
+    }
+    
+    public List<Partido> getPartidos() {
+        return partidos;
     }
 
     public static PartidoController getInstancia() {
